@@ -1,3 +1,4 @@
+import numpy as np
 from helper import norm_pdf
 
 # Initialize prior probabilities
@@ -10,16 +11,22 @@ def initialize_priors(map_size, landmarks, stdev):
     # landmark +/- 1.0 meters * stdev.
     positions = []
     for p in landmarks:
+        # p : 3 9 14 23
         start = int(p - stdev) - 1
+        # start : 1 7 12 21
         if start < p:
             start += 1
+        # start : 2 8 13 22
         c = 0
         while start + c <= p + stdev:
             # Gather positions to set initial probability.
             positions.append(start + c)
             c += 1
+
+    # position : [2, 3, 4, 8, 9, 10, 13, 14, 15, 22, 23, 24]
     # Calculate actual probability to be uniformly distributed.
     prob = 1.0 / len(positions)
+
     # Set the probability to each position.
     for p in positions:
         priors[p] += prob
@@ -47,6 +54,23 @@ def motion_model(position, mov, priors, map_size, stdev):
     # moving to the current position from that prior.
     # Multiply this probability to the prior probability of
     # the vehicle "was" at that prior position.
+    # print("position : {}".format(position))
+    # print("mov : {}".format(mov))
+    # print("priors : {}".format(priors))
+    # print("len(priors) : {}".format(len(priors)))
+    # print("map_size : {}".format(map_size))
+    # print("stdev : {}".format(stdev))
+
+    for i in range(map_size):
+        # Check all priors
+        prior = priors[i]
+        # get distance
+        distance = position - i
+        # get p_trans
+        p_trans = norm_pdf(distance, m=1, s=stdev)
+        # sum
+        position_prob += prior*p_trans
+
     return position_prob
 
 # Observation model (assuming independent Gaussian)
@@ -64,6 +88,20 @@ def observation_model(landmarks, observations, pseudo_ranges, stdev):
     #     d: observation distance
     #     mu: expected mean distance, given by pseudo_ranges
     #     sig: squared standard deviation of measurement
+
+    # print("landmarks : {}".format(landmarks))
+    # print("observations : {}".format(observations))
+    # print("pseudo_ranges : {}".format(pseudo_ranges))
+    # print("stdev : {}".format(stdev))
+
+    if len(observations) == 0 or len(observations) > len(pseudo_ranges):
+        return 0
+
+    for i in range(len(observations)):
+        mu = pseudo_ranges[i]
+        sig = stdev
+        distance_prob *= norm_pdf(observations[i], mu, sig)
+
     return distance_prob
 
 # Normalize a probability distribution so that the sum equals 1.0.

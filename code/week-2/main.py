@@ -59,6 +59,8 @@ if __name__ == '__main__':
         map_size, landmark_positions, position_stdev
     )
 
+    # priors : [0.0, 0.0, 0.08333333333333333, 0.08333333333333333, 0.08333333333333333, 0.0, 0.0, 0.0, 0.08333333333333333, 0.08333333333333333, 0.08333333333333333, 0.0, 0.0, 0.08333333333333333, 0.08333333333333333, 0.08333333333333333, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.08333333333333333, 0.08333333333333333, 0.08333333333333333]
+
     # Cycle through timesteps
     for t in range(len(observations)):
         '''
@@ -75,6 +77,7 @@ if __name__ == '__main__':
                 pseudo_position, mov_per_timestep, priors,
                 map_size, control_stdev
             )
+
             # Get pseudo range
             pseudo_ranges = estimate_pseudo_range(
                 landmark_positions, pseudo_position
@@ -85,6 +88,8 @@ if __name__ == '__main__':
                 landmark_positions, observations[t],
                 pseudo_ranges, observation_stdev
             )
+
+            #break
             # Calculate posterior probability
             posteriors[pseudo_position] = motion_prob * observation_prob
 
@@ -94,6 +99,7 @@ if __name__ == '__main__':
                                   posteriors[pseudo_position])
             )
             '''
+        #break
 
         # Normalize the posterior probability distribution
         posteriors = normalize_distribution(posteriors)
