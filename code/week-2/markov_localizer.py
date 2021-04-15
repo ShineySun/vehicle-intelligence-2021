@@ -94,6 +94,7 @@ def observation_model(landmarks, observations, pseudo_ranges, stdev):
     # print("pseudo_ranges : {}".format(pseudo_ranges))
     # print("stdev : {}".format(stdev))
 
+    # (1), (2) Exception  -->  return no probability
     if len(observations) == 0 or len(observations) > len(pseudo_ranges):
         return 0
 
