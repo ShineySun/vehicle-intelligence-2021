@@ -13,7 +13,7 @@
 
 ### My Result Graph
 [//]: # (Image References)
-[plot]: .result_graph/result.gif
+[plot]: ./result_graph/result.gif
 
 ## Assignment
 
