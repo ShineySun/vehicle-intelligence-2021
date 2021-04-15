@@ -54,12 +54,6 @@ def motion_model(position, mov, priors, map_size, stdev):
     # moving to the current position from that prior.
     # Multiply this probability to the prior probability of
     # the vehicle "was" at that prior position.
-    # print("position : {}".format(position))
-    # print("mov : {}".format(mov))
-    # print("priors : {}".format(priors))
-    # print("len(priors) : {}".format(len(priors)))
-    # print("map_size : {}".format(map_size))
-    # print("stdev : {}".format(stdev))
 
     for i in range(map_size):
         # Check all priors

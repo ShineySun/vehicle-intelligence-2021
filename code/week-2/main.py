@@ -119,4 +119,5 @@ if __name__ == '__main__':
         fig, graph_animator.animate, blit=True, interval=1000, repeat=False,
         frames=len(graph)
     )
+    #ani.save("/home/sun/Desktop/vehicle-intelligence-2021/code/week-2/result_graph/result.gif",writer='imagemagick', fps=1, dpi=100)
     plt.show()

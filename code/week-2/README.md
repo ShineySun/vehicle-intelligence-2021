@@ -1,9 +1,19 @@
 # Week 2 - Markov Localization
 
 ---
+### Motion Model
+* Calculate the probability for all possible prior positions
+* Calculate the motion model probability using the belief prior state
+* Return total probability
 
+### Observation Model
+* Exception Check : check a pseudo range vector existence using observations
+* Calculate the observation model probability using helper.norm_pdf function
+* Return total probability
+
+### My Result Graph
 [//]: # (Image References)
-[plot]: ./markov.gif
+[plot]: .result_graph/result.gif
 
 ## Assignment
 
