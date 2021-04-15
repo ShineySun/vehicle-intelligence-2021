@@ -33,8 +33,9 @@ def plot_2D(graph):
     graph_animator = GraphAnimator(
         particle_scatter, landmark_scatter, pos_scatter, graph
     )
-    _ = animation.FuncAnimation(
+    ani = animation.FuncAnimation(
         fig, graph_animator.animate, blit=True, interval=50, repeat=False,
         frames=len(graph)
     )
+    #ani.save("./result_graph/result.gif", writer='imagemagick', fps=30, dpi=100)
     plt.show()

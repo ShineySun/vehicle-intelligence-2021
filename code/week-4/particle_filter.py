@@ -1,5 +1,7 @@
 import numpy as np
 from helpers import distance
+from helpers import gaussian_distribution
+import copy
 
 class ParticleFilter:
     def __init__(self, num_particles):
@@ -77,28 +79,80 @@ class ParticleFilter:
         # TODO: For each particle, do the following:
         # 1. Select the set of landmarks that are visible
         #    (within the sensor range).
-        # 2. Transform each observed landmark's coordinates from the
-        #    particle's coordinate system to the map's coordinates.
-        # 3. Associate each transformed observation to one of the
-        #    predicted (selected in Step 1) landmark positions.
-        #    Use self.associate() for this purpose - it receives
-        #    the predicted landmarks and observations; and returns
-        #    the list of landmarks by implementing the nearest-neighbour
-        #    association algorithm.
-        # 4. Calculate probability of this set of observations based on
-        #    a multi-variate Gaussian distribution (two variables being
-        #    the x and y positions with means from associated positions
-        #    and variances from std_landmark_x and std_landmark_y).
-        #    The resulting probability is the product of probabilities
-        #    for all the observations.
-        # 5. Update the particle's weight by the calculated probability.
+        for particle in self.particles:
 
-        pass
+            landmarks_in_range = []
+
+            for id, vertice in map_landmarks.items():
+                # Calculate the distance between landmark & particle
+                dist = distance(particle, vertice)
+
+                if dist < sensor_range:
+                    landmarks_in_range.append({'id' : id, 'x' : vertice['x'], 'y' : vertice['y']})
+
+            # EXCEPTION : NEXT LOOP
+            if len(landmarks_in_range) == 0:
+                continue
+
+            # 2. Transform each observed landmark's coordinates from the
+            #    particle's coordinate system to the map's coordinates.
+            trans_observations = []
+
+            cos_theta = np.cos(particle['t'])
+            sin_theta = np.sin(particle['t'])
+
+            for ob_idx, observation in enumerate(observations):
+                # To map's corrdinates
+                trans_x = particle['x'] + observation['x']*cos_theta - observation['y']*sin_theta
+                trans_y = particle['y'] + observation['x']*sin_theta + observation['y']*cos_theta
+
+                trans_observations.append({'x' : trans_x, 'y' : trans_y})
+
+            # 3. Associate each transformed observation to one of the
+            #    predicted (selected in Step 1) landmark positions.
+            #    Use self.associate() for this purpose - it receives
+            #    the predicted landmarks and observations; and returns
+            #    the list of landmarks by implementing the nearest-neighbour
+            #    association algorithm.
+
+            ass = self.associate(landmarks_in_range, trans_observations)
+
+            particle['w'] = 1
+            if len(particle['assoc']) != 0:
+                particle['assoc'] = []
+
+            weight_i = 1
+
+            # 4. Calculate probability of this set of observations based on
+            #    a multi-variate Gaussian distribution (two variables being
+            #    the x and y positions with means from associated positions
+            #    and variances from std_landmark_x and std_landmark_y).
+            #    The resulting probability is the product of probabilities
+            #    for all the observations.
+            for trans_ob, ass_pt in list(zip(trans_observations, ass)):
+                # x-coordinate of observation
+                trans_x = trans_ob['x']
+                # y-coordinate of observation
+                trans_y = trans_ob['y']
+                # x-coordinate of associated landmark
+                ass_x = ass_pt['x']
+                # y-coordinate of associated landmark
+                ass_y = ass_pt['y']
+                # measurement uncertainty in the x-coordinate
+                sigma_x = std_landmark_x
+                # measurement uncertainty in the y-coordinate
+                sigma_y = std_landmark_y
+
+                weight_i *= gaussian_distribution(trans_x, trans_y, ass_x, ass_y, sigma_x, sigma_y) + 1e-60
+
+                particle['assoc'].append(ass_pt['id'])
+
+            # 5. Update the particle's weight by the calculated probability.
+            particle['w'] = weight_i
 
     # Resample particles with replacement with probability proportional to
     #   their weights.
     def resample(self):
-        return
         # TODO: Select (possibly with duplicates) the set of particles
         #       that captures the posteior belief distribution, by
         # 1. Drawing particle samples according to their weights.
@@ -108,7 +162,18 @@ class ParticleFilter:
         # Finally, self.particles shall contain the newly drawn set of
         #   particles.
 
-        pass
+        new_particles = []
+        # all particles's weight
+        weight_list = [i['w'] for i in self.particles]
+
+        # normalize
+        weight_list /= np.sum(weight_list)
+        # generate random idx
+        generate_idx = np.random.choice(self.num_particles, self.num_particles, p = weight_list)
+        # generate new particles
+        new_particles = [copy.deepcopy(self.particles[g_idx]) for g_idx in generate_idx]
+        # update the particles(resampling end)
+        self.particles = new_particles
 
     # Choose the particle with the highest weight (probability)
     def get_best_particle(self):

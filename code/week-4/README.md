@@ -5,6 +5,20 @@
 [//]: # (Image References)
 [empty-update]: ./empty-update.gif
 [example]: ./example.gif
+[My-result]: ./result_graph/result.gif
+### Update Weights
+* Select the set of landmarks that are in sensor range
+* Transform landmark's coordinates from particle's to map's coordinates
+* Get list of associated landmarks
+* Calculate probability using gaussian_distribution(implemented in helper.py)
+* Update Weight
+
+### Resampling
+* According to particle's weight, Generate random index list
+* Resample new particles & Replace
+
+### My Result
+![My Particle Filter with Proper Update & Resample][My-result]
 
 ## Assignment
 
