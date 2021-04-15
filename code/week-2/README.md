@@ -13,7 +13,8 @@
 
 ### My Result Graph
 [//]: # (Image References)
-[plot]: ./result_graph/result.gif
+[plot]: ./markov.gif
+[result]: ./result_graph/result.gif
 ![My Result of Markov Localization][plot]
 
 ## Assignment
@@ -28,5 +29,7 @@ The algorithm is presented and explained in class.
 All the other source files (`main.py` and `helper.py`) should be left as they are.
 
 If you correctly implement the above functions, you expect to see a plot similar to the following:
+
+![Test Result of Markov Localization][plot]
 
 If you run the program (`main.py`) without any modification to the code, it will generate only the frame of the above plot because all probabilities returned by `motion_model()` are zero by default.

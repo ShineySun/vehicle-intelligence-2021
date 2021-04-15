@@ -60,4 +60,4 @@ class KalmanFilter:
         self.P = np.dot((np.eye(4, dtype=float)-np.dot(K, H_j)),self.P)
         #print(np.dot(K, H_j).shape)
 
-        return 0
+        #return 0

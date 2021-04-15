@@ -5,6 +5,18 @@
 [//]: # (Image References)
 [kalman-result]: ./kalman_filter/graph.png
 [EKF-results]: ./EKF/plot.png
+[My-results]: ./EKF/result_img/result.png
+
+### Extended Kalman Filter
+* Predict Jacobian Matrix H_j using last estimate(self.x)
+* Predict Error Covariance Matrix(S)
+* Calculate Kalman Gain(K)
+* Estimate the y value
+* Update new estimate value(self.x)
+* Calculate Error Covariance Matrix(P)
+
+### My Result Image
+![My Testing of Extended Kalman Filter Example][My-results]
 
 ## Kalman Filter Example
 
