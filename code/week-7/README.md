@@ -1,6 +1,8 @@
 # Week 7 - Hybrid A* Algorithm & Trajectory Generation
 
 ---
+### Add New Readme.md for assignment in [`./hybrid_a_star`](./hybrid_a_star) Folder
+---
 
 [//]: # (Image References)
 [has-example]: ./hybrid_a_star/has_example.png
