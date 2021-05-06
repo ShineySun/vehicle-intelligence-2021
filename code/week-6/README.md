@@ -1,6 +1,9 @@
 # Week 6 - Prediction & Behaviour Planning
 
 ---
+### Add New Readme.md for assignment 1 in [./GNB](./GNB) Folder
+### Add New Readme.md for assignment 2 in [./BP](./BP) Folder
+
 
 ## Assignment #1
 

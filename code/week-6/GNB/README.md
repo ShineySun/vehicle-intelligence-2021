@@ -99,7 +99,7 @@ def predict(self, observation):
 ```
 You got 83.60 percent correct
 ```
-
+---
 ## Assignment #1
 
 Under the directory [./GNB](./GNB), you are given two Python modules:
