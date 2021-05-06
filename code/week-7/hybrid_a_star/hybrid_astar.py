@@ -2,7 +2,7 @@ import numpy as np
 
 class HybridAStar:
     # Determine how many grid cells to have for theta-axis.
-    NUM_THETA_CELLS = 90
+    NUM_THETA_CELLS = 360
 
     # Define min, max, and resolution of steering angles
     omega_min = -35
@@ -30,13 +30,41 @@ class HybridAStar:
         next_states = []
 
         # Consider a discrete selection of steering angles.
-        for delta_t in []:
-            pass
+        # M2021077 Sunpil Kim
+        for delta_t in range(self.omega_min, self.omega_max+1, self.omega_step):
             # TODO: implement the trajectory generation based on
             # a simple bicycle model.
             # Let theta2 be the vehicle's heading (in radian)
             # between 0 and 2 * PI.
             # Check validity and then add to the next_states list.
+
+            delta = np.pi / 180.0 * delta_t
+            # Bicycle Model
+            omega = self.speed / self.length * np.tan(delta)
+            # Vehicle's Heading
+            theta2 = theta + omega
+            # theta2 [0 ~ 2*PI]
+            if theta2 < 0:
+                theta2 += 2*np.pi
+            elif theta2 > 2*np.pi:
+                theta2 -= 2*np.pi
+
+            # Get Post position
+            post_x = x + self.speed*np.cos(theta)
+            post_y = y + self.speed*np.sin(theta)
+
+            # CHECK VALIDITY
+            if 0 <= self.idx(post_x) and self.idx(post_x) < self.dim[1] and 0 <= self.idx(post_y) and self.idx(post_y) < self.dim[2]:
+                post_f = g2 + self.heuristic(post_x, post_y, goal)
+                # Add to the next states list
+                post_state = {
+                    'f': post_f,
+                    'g': g2,
+                    'x': post_x,
+                    'y': post_y,
+                    't': theta2,
+                }
+                next_states.append(post_state)
 
         return next_states
 
@@ -79,7 +107,30 @@ class HybridAStar:
             # Compute reachable new states and process each of them.
             next_states = self.expand(curr, goal)
             for n in next_states:
-                pass
+                idx_x, idx_y = self.idx(n['x']), self.idx(n['y'])
+                stack2 = self.theta_to_stack_num(n['t'])
+
+                if grid[idx_x][idx_y] == 0:
+                    # Distance from Obstacle
+                    dist_x = abs(self.idx(x) - idx_x)
+                    dist_y = abs(self.idx(y)- idx_y)
+                    # Min Distance
+                    min_x = min(self.idx(x), idx_x)
+                    min_y = min(self.idx(y), idx_y)
+
+                    flag = True
+
+                    for d_x in range(dist_x+1):
+                        for d_y in range(dist_y+1):
+                            if grid[min_x + d_x][min_y + d_y] != 0:
+                                flag = False
+
+                    if flag and self.closed[stack2][idx_x][idx_y] == 0:
+                        self.closed[stack2][idx_x][idx_y] = 1
+                        total_closed += 1
+                        self.came_from[stack2][idx_x][idx_y] = curr
+                        opened.append(n)
+
         else:
             # We weren't able to find a valid path; this does not necessarily
             # mean there is no feasible trajectory to reach the goal.
@@ -94,7 +145,16 @@ class HybridAStar:
         # given theta represented in radian. Note that the calculation
         # should partition 360 degrees (2 * PI rad) into different
         # cells whose number is given by NUM_THETA_CELLS.
-        return 0
+
+        # Radian to Degree
+        deg = theta * 180 / np.pi
+        interval = 360 / self.NUM_THETA_CELLS
+        stack_num = deg // interval
+        # Exception Occur
+        if stack_num == self.NUM_THETA_CELLS:
+            stack_num = 0
+
+        return int(stack_num)
 
     # Calculate the index of the grid cell based on the vehicle's position.
     def idx(self, pos):
@@ -104,7 +164,9 @@ class HybridAStar:
     # Implement a heuristic function to be used in the hybrid A* algorithm.
     def heuristic(self, x, y, goal):
         # TODO: implement a heuristic function.
-        return 0
+        # L2 DISTANCE
+        l2_dist = np.sqrt((goal[0]-x)*(goal[0]-x) + (goal[1]-y)*(goal[1]-y))
+        return l2_dist
 
     # Reconstruct the path taken by the hybrid A* algorithm.
     def reconstruct_path(self, start, goal):
