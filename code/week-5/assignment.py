@@ -139,6 +139,7 @@ def optimum_policy_2D(grid, init, goal, cost):
         elif policy[(f,y,x)] == 1:
             policy2D[(y,x)] = action_name[2]
         else:
+            # final state is visualized as "*" star marker
             policy2D[(y,x)] = "*"
 
     # Return the optimum policy generated above.
